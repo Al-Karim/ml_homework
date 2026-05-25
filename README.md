@@ -50,32 +50,32 @@ docker-compose up -d
 | PostgreSQL | localhost:5432 | pipeline_user | pipeline_pass |
 
 ### Все контейнеры запущены
-![Docker Containers](screenshots/01_docker_containers.png)
+![Docker Containers](screenshots/01_docker_containers.jpg)
 
 ---
 
 ## Jupyter — список ноутбуков
 
-![Jupyter Notebooks](screenshots/02_jupyter_notebooks.png)
+![Jupyter Notebooks](screenshots/02_jupyter_notebooks.jpg)
 
 ---
 
 ## MinIO — bucket с parquet файлами
 
-![MinIO Bucket](screenshots/03_minio_bucket.png)
+![MinIO Bucket](screenshots/03_minio_bucket.jpg)
 
 ---
 
 ## Superset — дашборды
 
-![Superset Dashboard](screenshots/04_superset_dashboard.png)
+![Superset Dashboard](screenshots/04_superset_dashboard.jpg)
 
 ---
 
 ## Задание 1 — Аналитика добычи
 
 ### ETL ноутбук — результат выполнения
-![ETL Notebook](screenshots/05_notebook_etl.png)
+![ETL Notebook](screenshots/05_notebook_etl.jpg)
 
 ### Суточная добыча по скважинам (Line Chart)
 ![Production Timeline](notebooks/chart_01_production_timeline.png)
@@ -91,7 +91,7 @@ docker-compose up -d
 ## Задание 2 — Прогноз дебита (ML)
 
 ### Метрики модели (MAE / RMSE / R²)
-![ML Notebook](screenshots/06_notebook_ml.png)
+![ML Notebook](screenshots/06_notebook_ml.jpg)
 
 ### Важность признаков — Random Forest
 ![Feature Importance](notebooks/chart_04_feature_importance.png)
@@ -107,7 +107,7 @@ docker-compose up -d
 ## Задание 3 — Аномалии и отказ оборудования
 
 ### Аномалии и Risk Score
-![Anomaly Notebook](screenshots/07_notebook_anomaly.png)
+![Anomaly Notebook](screenshots/07_notebook_anomaly.jpg)
 
 ### Аномалии по времени (температура, вибрация, ток)
 ![Anomalies Timeline](notebooks/chart_07_anomalies_timeline.png)
