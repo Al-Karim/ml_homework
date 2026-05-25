@@ -23,38 +23,24 @@ PostgreSQL → ETL (Python) → MinIO (Parquet) → Jupyter → Superset
 
 ```
 project/
-├── docker-compose.yml          # Инфраструктура
+├── docker-compose.yml
 ├── sql/
-│   └── 01_init.sql             # Схема + данные (все таблицы)
+│   └── 01_init.sql
 ├── etl/
-│   └── extract_to_minio.py    # ETL скрипт (PostgreSQL → MinIO)
+│   └── extract_to_minio.py
 └── notebooks/
-    ├── 01_etl_pipeline.ipynb           # ETL внутри Jupyter
-    ├── 02_task1_production_analytics.ipynb  # Задание 1
-    ├── 03_task2_ml_prediction.ipynb         # Задание 2 (ML)
-    ├── 04_task3_anomaly_detection.ipynb     # Задание 3 (аномалии)
-    └── 05_task4_logistics.ipynb             # Задание 4 (логистика)
+    ├── 01_etl_pipeline.ipynb
+    ├── 02_task1_production_analytics.ipynb
+    ├── 03_task2_ml_prediction.ipynb
+    ├── 04_task3_anomaly_detection.ipynb
+    └── 05_task4_logistics.ipynb
 ```
 
 ## Быстрый старт
 
-### 1. Запуск инфраструктуры
-
 ```bash
 docker-compose up -d
 ```
-
-Дождитесь запуска всех сервисов (~2-3 минуты).
-
-### 2. Проверка сервисов
-
-```bash
-docker-compose ps
-```
-
-Все сервисы должны быть `healthy` или `running`.
-
-### 3. Доступ к сервисам
 
 | Сервис | URL | Логин | Пароль |
 |--------|-----|-------|--------|
@@ -63,49 +49,61 @@ docker-compose ps
 | Superset | http://localhost:8088 | admin | admin |
 | PostgreSQL | localhost:5432 | pipeline_user | pipeline_pass |
 
-### 4. Выполнение ноутбуков
+---
 
-Откройте Jupyter по адресу http://localhost:8888, перейдите в папку `work/` и запускайте ноутбуки **по порядку**:
+## Задание 1 — Аналитика добычи
 
-1. `01_etl_pipeline.ipynb` — ETL: PostgreSQL → MinIO
-2. `02_task1_production_analytics.ipynb` — аналитика добычи
-3. `03_task2_ml_prediction.ipynb` — прогноз дебита
-4. `04_task3_anomaly_detection.ipynb` — детекция аномалий
-5. `05_task4_logistics.ipynb` — анализ логистики
+### Суточная добыча по скважинам (Line Chart)
+![Production Timeline](notebooks/chart_01_production_timeline.png)
 
-### 5. Настройка Superset
+### KPI скважин: суммарная добыча и % простоя (Bar Chart)
+![Well KPI](notebooks/chart_02_well_kpi.png)
 
-1. Войдите в Superset: http://localhost:8088 (admin/admin)
-2. `Settings → Database Connections → + Database`
-3. Выберите PostgreSQL, строка подключения:
-   ```
-   postgresql://pipeline_user:pipeline_pass@postgres:5432/oildb
-   ```
-4. Создайте датасеты из представлений:
-   - `mart_production`
-   - `mart_failures`  
-   - `mart_logistics`
-5. Создайте чарты (см. ниже)
+### Влияние давления и температуры на дебит (Heatmap)
+![Heatmap](notebooks/chart_03_heatmap.png)
 
-#### Чарты для Задания 1 (mart_production)
-- **Line chart**: X=date, Y=oil_ton, Color=well_name → «Добыча по времени»
-- **Bar chart**: X=well_name, Y=SUM(oil_ton) → «Топ скважин»
-- **Heatmap**: X=pressure, Y=oil_ton → «Давление vs Дебит»
+---
 
-#### Чарты для Задания 2 (mart_ml_predictions)
-- **Line chart**: Actual vs Predicted → «Прогноз дебита»
+## Задание 2 — Прогноз дебита (ML)
 
-#### Чарты для Задания 3 (mart_failures)
-- **Table**: pump, failure_type, downtime_hours → «Отказы оборудования»
+### Важность признаков — Random Forest
+![Feature Importance](notebooks/chart_04_feature_importance.png)
 
-#### Чарты для Задания 4 (mart_logistics)
-- **Bar chart**: weather → avg(delay_hours) → «Задержка vs Погода»
-- **Scatter**: distance_km vs cost_usd → «Cost vs Distance»
-- **Table**: driver KPI
+### Actual vs Predicted — Linear Regression & Random Forest
+![Actual vs Predicted](notebooks/chart_05_actual_vs_predicted.png)
+
+### Ошибка модели по времени
+![Error Over Time](notebooks/chart_06_error_over_time.png)
+
+---
+
+## Задание 3 — Аномалии и отказ оборудования
+
+### Аномалии по времени (температура, вибрация, ток)
+![Anomalies Timeline](notebooks/chart_07_anomalies_timeline.png)
+
+### Рост вибрации перед отказом насосов
+![Vibration Pre-failure](notebooks/chart_08_vibration_prefailure.png)
+
+### Risk Score по насосам
+![Risk Score](notebooks/chart_09_risk_score.png)
+
+---
+
+## Задание 4 — Логистика и поставки
+
+### Задержки по погодным условиям & Cost vs Distance
+![Delay vs Weather](notebooks/chart_10_delay_weather.png)
+
+### KPI по водителям
+![Driver KPI](notebooks/chart_11_driver_kpi.png)
+
+### Важность факторов задержки
+![Delay Factors](notebooks/chart_12_delay_factors.png)
+
+---
 
 ## Данные
-
-### Таблицы
 
 | Таблица | Описание | Строк |
 |---------|----------|-------|
@@ -119,25 +117,14 @@ docker-compose ps
 | `deliveries` | Поставки | 30 |
 | `drivers` | Водители | 5 |
 | `vehicles` | Транспорт | 5 |
-| `oil_stations` | Нефтяные станции | 20 |
 
-### Витрины (Views)
+## Витрины (Views)
 
 | View | Описание |
 |------|----------|
 | `mart_production` | Добыча + данные скважин |
 | `mart_failures` | Отказы + данные насосов |
 | `mart_logistics` | Поставки + водители + транспорт |
-
-## ETL — запуск вне Jupyter
-
-```bash
-# Установить зависимости
-pip install psycopg2-binary sqlalchemy boto3 pyarrow minio pandas
-
-# Запустить
-PG_HOST=localhost MINIO_ENDPOINT=localhost:9000 python etl/extract_to_minio.py
-```
 
 ## Чек-лист
 
@@ -150,17 +137,3 @@ PG_HOST=localhost MINIO_ENDPOINT=localhost:9000 python etl/extract_to_minio.py
 - [x] `04_task3_anomaly_detection.ipynb` — Z-score + Isolation Forest + Risk Score
 - [x] `05_task4_logistics.ipynb` — анализ задержек + KPI водителей
 - [x] Superset дашборды — Delay vs Weather, Cost vs Distance, Driver KPI
-
-## Скриншоты
-
-Скриншоты находятся в папке `screenshots/` и подтверждают работу всех компонентов pipeline.
-
-| Файл | Что показывает |
-|------|----------------|
-| `01_docker_containers.png` | Все 4 контейнера healthy |
-| `02_jupyter_notebooks.png` | 5 запущенных ноутбуков |
-| `03_minio_bucket.png` | Bucket oil-pipeline с parquet файлами |
-| `04_superset_dashboard.png` | Дашборды с чартами |
-| `05_notebook_etl.png` | Вывод ETL ноутбука |
-| `06_notebook_ml.png` | Метрики ML модели (MAE/RMSE/R²) |
-| `07_notebook_anomaly.png` | Аномалии и Risk Score |
