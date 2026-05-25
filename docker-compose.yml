@@ -1,0 +1,93 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: pipeline_postgres
+    environment:
+      POSTGRES_DB: oildb
+      POSTGRES_USER: pipeline_user
+      POSTGRES_PASSWORD: pipeline_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - pipeline_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pipeline_user -d oildb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: pipeline_minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - pipeline_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  jupyter:
+    image: jupyter/scipy-notebook:python-3.11
+    container_name: pipeline_jupyter
+    user: root
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      GRANT_SUDO: "yes"
+      NB_USER: jovyan
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    networks:
+      - pipeline_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    command: >
+      start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
+
+  superset:
+    image: apache/superset:3.1.0
+    container_name: pipeline_superset
+    environment:
+      SUPERSET_SECRET_KEY: "ThisIsAVerySecretKey1234567890!"
+      SUPERSET_CONFIG_PATH: "/app/superset_config.py"
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./superset_config.py:/app/superset_config.py
+    networks:
+      - pipeline_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      bash -c "
+        superset db upgrade &&
+        superset fab create-admin --username admin --firstname Admin --lastname User --email admin@example.com --password admin 2>/dev/null || true &&
+        superset init &&
+        superset run --host 0.0.0.0 -p 8088 --with-threads
+      "
+
+volumes:
+  postgres_data:
+  minio_data:
+
+networks:
+  pipeline_net:
+    driver: bridge
