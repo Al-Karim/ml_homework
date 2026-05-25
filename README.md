@@ -49,14 +49,38 @@ docker-compose up -d
 | Superset | http://localhost:8088 | admin | admin |
 | PostgreSQL | localhost:5432 | pipeline_user | pipeline_pass |
 
+### Все контейнеры запущены
+![Docker Containers](screenshots/01_docker_containers.png)
+
+---
+
+## Jupyter — список ноутбуков
+
+![Jupyter Notebooks](screenshots/02_jupyter_notebooks.png)
+
+---
+
+## MinIO — bucket с parquet файлами
+
+![MinIO Bucket](screenshots/03_minio_bucket.png)
+
+---
+
+## Superset — дашборды
+
+![Superset Dashboard](screenshots/04_superset_dashboard.png)
+
 ---
 
 ## Задание 1 — Аналитика добычи
 
+### ETL ноутбук — результат выполнения
+![ETL Notebook](screenshots/05_notebook_etl.png)
+
 ### Суточная добыча по скважинам (Line Chart)
 ![Production Timeline](notebooks/chart_01_production_timeline.png)
 
-### KPI скважин: суммарная добыча и % простоя (Bar Chart)
+### KPI скважин: суммарная добыча и % простоя
 ![Well KPI](notebooks/chart_02_well_kpi.png)
 
 ### Влияние давления и температуры на дебит (Heatmap)
@@ -65,6 +89,9 @@ docker-compose up -d
 ---
 
 ## Задание 2 — Прогноз дебита (ML)
+
+### Метрики модели (MAE / RMSE / R²)
+![ML Notebook](screenshots/06_notebook_ml.png)
 
 ### Важность признаков — Random Forest
 ![Feature Importance](notebooks/chart_04_feature_importance.png)
@@ -78,6 +105,9 @@ docker-compose up -d
 ---
 
 ## Задание 3 — Аномалии и отказ оборудования
+
+### Аномалии и Risk Score
+![Anomaly Notebook](screenshots/07_notebook_anomaly.png)
 
 ### Аномалии по времени (температура, вибрация, ток)
 ![Anomalies Timeline](notebooks/chart_07_anomalies_timeline.png)
@@ -128,12 +158,12 @@ docker-compose up -d
 
 ## Чек-лист
 
-- [x] `docker-compose.yml` — инфраструктура (PostgreSQL, MinIO, Jupyter, Superset)
-- [x] `sql/01_init.sql` — схема и данные всех таблиц
-- [x] `etl/extract_to_minio.py` — ETL скрипт
-- [x] `01_etl_pipeline.ipynb` — ETL с партиционированием Parquet
-- [x] `02_task1_production_analytics.ipynb` — аналитика добычи + витрина
-- [x] `03_task2_ml_prediction.ipynb` — Linear Regression + Random Forest (MAE/RMSE/R²)
-- [x] `04_task3_anomaly_detection.ipynb` — Z-score + Isolation Forest + Risk Score
-- [x] `05_task4_logistics.ipynb` — анализ задержек + KPI водителей
+- [x] docker-compose.yml — инфраструктура (PostgreSQL, MinIO, Jupyter, Superset)
+- [x] sql/01_init.sql — схема и данные всех таблиц
+- [x] etl/extract_to_minio.py — ETL скрипт
+- [x] 01_etl_pipeline.ipynb — ETL с партиционированием Parquet
+- [x] 02_task1_production_analytics.ipynb — аналитика добычи + витрина
+- [x] 03_task2_ml_prediction.ipynb — Linear Regression + Random Forest (MAE/RMSE/R2)
+- [x] 04_task3_anomaly_detection.ipynb — Z-score + Isolation Forest + Risk Score
+- [x] 05_task4_logistics.ipynb — анализ задержек + KPI водителей
 - [x] Superset дашборды — Delay vs Weather, Cost vs Distance, Driver KPI
